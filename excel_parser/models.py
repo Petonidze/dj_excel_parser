@@ -12,3 +12,7 @@ class Data(models.Model):
     fact = models.BooleanField(default=0)
     forecast = models.BooleanField(default=0)
     date = models.DateField(default=now)
+
+    class Meta:
+        db_table = 'excel_parser_data'
+

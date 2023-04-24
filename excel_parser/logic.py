@@ -70,72 +70,25 @@ class ExcelParser:
 
 class TotalCalculator:
 
-    def print_totals(self, *args, **kwargs):
-        self.print_fact_qliq()
-        self.print_fact_qoil()
-        self.print_forecast_qliq()
-        self.print_forecast_qoil()
+    def print_totals(self):
+        params = [
+            {"fact": True, 'qliq': True},
+            {"fact": True, 'qoil': True},
+            {"forecast": True, 'qliq': True},
+            {"forecast": True, 'qoil': True},
+        ]
+        for param in params:
+            fact_qliq_qs = self.get_data_qs(param)
+            print(f'{" ".join(param.keys())} total:')
+            for obj in fact_qliq_qs:
+                print(f"On {obj.get('date')}:")
+                print('data1_total:', obj.get('data1_total'))
+                print('data2_total:', obj.get('data2_total'))
+                print('_______________________________________')
+            print('\n')
 
     @staticmethod
-    def get_fact_qliq_qs():
-        return Data.objects.filter(fact=True, qliq=True).values('date').order_by('date')\
-            .annotate(data1_total=Sum('data1'))\
+    def get_data_qs(param):
+        return Data.objects.filter(**param).values('date').order_by('date') \
+            .annotate(data1_total=Sum('data1')) \
             .annotate(data2_total=Sum('data2'))
-
-    @staticmethod
-    def get_fact_qoil_qs():
-        return Data.objects.filter(fact=True, qoil=True).values('date').order_by('date')\
-            .annotate(data1_total=Sum('data1'))\
-            .annotate(data2_total=Sum('data2'))
-
-    @staticmethod
-    def get_forecast_qliq_qs():
-        return Data.objects.filter(forecast=True, qliq=True).values('date').order_by('date')\
-            .annotate(data1_total=Sum('data1'))\
-            .annotate(data2_total=Sum('data2'))
-
-    @staticmethod
-    def get_forecast_qoil_qs():
-        return Data.objects.filter(forecast=True, qoil=True).values('date').order_by('date')\
-            .annotate(data1_total=Sum('data1'))\
-            .annotate(data2_total=Sum('data2'))
-
-    def print_fact_qliq(self):
-        fact_qliq_qs = self.get_fact_qliq_qs()
-        print('Fact Qliq Total:')
-        for obj in fact_qliq_qs:
-            print(f"On {obj.get('date')}:")
-            print('data1_total:', obj.get('data1_total'))
-            print('data2_total:', obj.get('data2_total'))
-            print('_______________________________________')
-        print('\n')
-
-    def print_fact_qoil(self):
-        fact_qoil_qs = self.get_fact_qoil_qs()
-        print('Fact Qoil Total:')
-        for obj in fact_qoil_qs:
-            print(f"On {obj.get('date')}:")
-            print('data1_total:', obj.get('data1_total'))
-            print('data2_total:', obj.get('data2_total'))
-            print('_______________________________________')
-        print('\n')
-
-    def print_forecast_qliq(self):
-        forecast_qliq_qs = self.get_forecast_qliq_qs()
-        print('Forecast Qliq Total:')
-        for obj in forecast_qliq_qs:
-            print(f"On {obj.get('date')}:")
-            print('data1_total:', obj.get('data1_total'))
-            print('data2_total:', obj.get('data2_total'))
-            print('_______________________________________')
-        print('\n')
-
-    def print_forecast_qoil(self):
-        forecast_qoil_qs = self.get_forecast_qoil_qs()
-        print('Forecast Qoil Total:')
-        for obj in forecast_qoil_qs:
-            print(f"On {obj.get('date')}:")
-            print('data1_total:', obj.get('data1_total'))
-            print('data2_total:', obj.get('data2_total'))
-            print('_______________________________________')
-        print('\n')
